@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import pika
 import os
+import json
 from datetime import datetime
 
 host = os.getenv('RABBITMQHOST', 'localhost')
@@ -19,9 +20,20 @@ try:
 
     now = datetime.now()
 
-    channel.basic_publish(exchange='',
-                          routing_key='hello',
-                          body='Hello World! ' + now.strftime("%d/%m/%Y %H:%M:%S"))
-    print(" [x] Sent 'Hello World!'")
+    account_create_dict = {
+        'currency': 'USD',
+        'startingBalance': 1000.0,
+        'overdraftLimit': -300.0
+    }
+    json = json.dumps(account_create_dict)
+
+    channel.basic_publish(exchange='spring-boot-exchange',
+                          routing_key='command',
+                          properties=pika.BasicProperties(
+                              # Add a key/value header
+                              headers={'type': 'CreateAccountCommand'}
+                          ),
+                          body=json)
+    print("Message sent.")
 finally:
     connection.close()

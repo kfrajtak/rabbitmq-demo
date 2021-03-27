@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 
 host = os.getenv('RABBITMQHOST', 'localhost')
+host = "172.17.0.3"
 print("RabbitMQ host:", host)
 
 
@@ -19,7 +20,7 @@ try:
 
     # make sure the recipient queue exists
     # create a hello queue to which the message will be delivered:
-    channel.queue_declare(queue='hello')
+    # channel.queue_declare(queue='hello')
 
     now = datetime.now()
 

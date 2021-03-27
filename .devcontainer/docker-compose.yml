@@ -18,16 +18,16 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     environment:
-      RABBITMQHOST: rabbitmq
-    links:
-      - rabbitmq
-  rabbitmq:
-    image: rabbitmq:3.8.3-management-alpine
-    network_mode: bridge
-    ports:
-      - 4369:4369
-      - 5671:5671
-      - 5672:5672
-      - 15671:15671
-      - 15672:15672
-      - 25672:25672
+      RABBITMQHOST: 127.0.0.1
+#    links:
+#      - rabbitmq
+#  rabbitmq:
+#    image: rabbitmq:3.8.3-management-alpine
+#    network_mode: bridge
+#    ports:
+#      - 4369:4369
+##      - 5671:5671
+#      - 5672:5672
+#      - 15671:15671
+#      - 15672:15672
+#      - 25672:25672
