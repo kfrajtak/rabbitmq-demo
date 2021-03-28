@@ -28,10 +28,12 @@ try:
     json = json.dumps(account_create_dict)
 
     channel.basic_publish(exchange='spring-boot-exchange',
-                          routing_key='command',
+                          routing_key='Command',
                           properties=pika.BasicProperties(
-                              # Add a key/value header
-                              headers={'type': 'CreateAccountCommand'}
+                              content_type="application/json",
+                              content_encoding='UTF-8',
+                              headers={
+                                  '__TypeId__': 'com.progressivecoder.es.eventsourcingaxonspringboot.dto.commands.AccountCreateDTO'}
                           ),
                           body=json)
     print("Message sent.")

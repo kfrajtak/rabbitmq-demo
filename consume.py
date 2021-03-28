@@ -24,7 +24,7 @@ try:
 
     now = datetime.now()
 
-    channel.basic_consume(queue='hello',
+    channel.basic_consume(queue='AccountActivated',
                           auto_ack=True,
                           on_message_callback=callback)
 
