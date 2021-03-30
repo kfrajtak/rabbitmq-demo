@@ -5,7 +5,6 @@ import json
 from datetime import datetime
 
 host = os.getenv('RABBITMQHOST', 'localhost')
-host = "172.17.0.3"
 print("RabbitMQ host:", host)
 
 # https://www.rabbitmq.com/tutorials/tutorial-one-python.html
@@ -22,8 +21,8 @@ try:
 
     account_create_dict = {
         'currency': 'USD',
-        'startingBalance': 1000.0,
-        'overdraftLimit': -300.0
+        'startingBalance': 1001.0,
+        'overdraftLimit': -321.0
     }
     json = json.dumps(account_create_dict)
 
