@@ -5,7 +5,6 @@ import json
 from datetime import datetime
 
 host = os.getenv('RABBITMQHOST', 'localhost')
-host = "172.17.0.3"
 print("RabbitMQ host:", host)
 
 # https://www.rabbitmq.com/tutorials/tutorial-one-python.html

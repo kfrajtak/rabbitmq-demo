@@ -1,34 +1,31 @@
 #!/usr/bin/env python
-import pika
-import os
-from datetime import datetime
+import flask
+from flask import request, jsonify
+from flask_cors import CORS
+import json
+import sys
 
-host = os.getenv('RABBITMQHOST', 'localhost')
-host = "172.17.0.3"
-print("RabbitMQ host:", host)
+app = flask.Flask(__name__)
+CORS(app)
+
+# notice there are no dependencies on Dapr - only HTTP GET and POST endpoints are declared
+
+# endpoint called by Dapr when application starts to get the list of topics to subscribe to
+# Dapr will create the subcription for your
+@app.route('/dapr/subscribe', methods=['GET'])
+def subscribe():
+    subscriptions = [{'pubsubname': 'pubsub',
+                      'topic': 'AccountActivatedEvent',  # topic to subscribe to
+                      'route': 'account-activated'}]  # see route below
+    return jsonify(subscriptions)
 
 
-def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
+# "event" listener - Dapr sidecar will POST data to this endpoint
+# when event arrives
+@app.route('/account-activated', methods=['POST'])
+def topic_subscriber():
+    print(request.json, flush=True)
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-# https://www.rabbitmq.com/tutorials/tutorial-one-python.html
-# establish a connection with RabbitMQ server.
-connection = pika.BlockingConnection(pika.ConnectionParameters(host))
-try:
-    channel = connection.channel()
-
-    # make sure the recipient queue exists
-    # create a hello queue to which the message will be delivered:
-    # channel.queue_declare(queue='hello')
-
-    now = datetime.now()
-
-    channel.basic_consume(queue='AccountActivated',
-                          auto_ack=True,
-                          on_message_callback=callback)
-
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
-finally:
-    connection.close()
+app.run()
