@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+from datetime import datetime
 import pika
 import os
-from datetime import datetime
 
 host = os.getenv('RABBITMQHOST', 'localhost')
 print("RabbitMQ host:", host)
@@ -13,7 +13,13 @@ def callback(ch, method, properties, body):
 
 # https://www.rabbitmq.com/tutorials/tutorial-one-python.html
 # establish a connection with RabbitMQ server.
-connection = pika.BlockingConnection(pika.ConnectionParameters(host))
+credentials = pika.PlainCredentials('consumer', 'empty')
+parameters = pika.ConnectionParameters(host,
+                                       5672,
+                                       '/',
+                                       credentials)
+
+connection = pika.BlockingConnection(parameters)
 try:
     channel = connection.channel()
 
