@@ -6,18 +6,10 @@ import os
 host = os.getenv('RABBITMQHOST', 'localhost')
 print("RabbitMQ host:", host)
 
-
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
 
-
-# https://www.rabbitmq.com/tutorials/tutorial-one-python.html
-# establish a connection with RabbitMQ server.
-credentials = pika.PlainCredentials('consumer', 'empty')
-parameters = pika.ConnectionParameters(host,
-                                       5672,
-                                       '/',
-                                       credentials)
+parameters = pika.ConnectionParameters(host, 5672, '/')
 
 connection = pika.BlockingConnection(parameters)
 try:
