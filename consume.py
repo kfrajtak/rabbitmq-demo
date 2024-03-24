@@ -1,31 +1,31 @@
-#!/usr/bin/env python
-from datetime import datetime
-import pika
-import os
+import pika, sys, os
 
-host = os.getenv('RABBITMQHOST', 'localhost')
-print("RabbitMQ host:", host)
+def main():
+    host = os.getenv('RABBITMQHOST', 'localhost')
+    print("RabbitMQ host:", host)
 
-def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
-
-parameters = pika.ConnectionParameters(host, 5672, '/')
-
-connection = pika.BlockingConnection(parameters)
-try:
+    credentials = pika.PlainCredentials('guest', 'guest')
+    parameters = pika.ConnectionParameters(host, credentials=credentials)
+    connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
-    # make sure the recipient queue exists
-    # create a hello queue to which the message will be delivered:
-    # channel.queue_declare(queue='hello')
+    def callback(ch, method, properties, body):
+        print(f" [x] Received {body}")
 
-    now = datetime.now()
-
-    channel.basic_consume(queue='AccountActivated',
-                          auto_ack=True,
-                          on_message_callback=callback)
+    channel.basic_consume(queue='AccountActivated', on_message_callback=callback, auto_ack=True)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
-finally:
-    connection.close()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except pika.exceptions.AMQPConnectionError as err:
+        print("Caught a channel error: {}, stopping...".format(err))        
+        
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
